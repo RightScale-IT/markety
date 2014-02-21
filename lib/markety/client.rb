@@ -55,7 +55,8 @@ module Markety
             :email => lead_record.email,
             :lead_attribute_list => {
               :attribute => attributes
-            }
+              },
+              :marketoCookie => lead_record._mkt_trk
           }
         })
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
