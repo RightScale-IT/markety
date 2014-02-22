@@ -56,12 +56,13 @@ module Markety
             :lead_attribute_list => {
               :attribute => attributes
               },
-              :marketoCookie => lead_record._mkt_trk
+              :marketoCookie => lead_record.get_attribute("_mkt_trk")
           }
         })
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
       rescue Exception => e
-        @logger.log(e) if @logger
+        @logger.info(lead_record.inspect)
+        @logger.info(e) if @logger
         return nil
       end
     end
@@ -88,7 +89,7 @@ module Markety
         })
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
       rescue Exception => e
-        @logger.log(e) if @logger
+        @logger.info(e) if @logger
         return nil
       end
     end
@@ -120,7 +121,7 @@ module Markety
         })
         return response
       rescue Exception => e
-        @logger.log(e) if @logger
+        @logger.info(e) if @logger
         return nil
       end
     end
@@ -130,7 +131,7 @@ module Markety
         response = send_request(:get_lead, {"leadKey" => lead_key.to_hash})
         return LeadRecord.from_hash(response[:success_get_lead][:result][:lead_record_list][:lead_record])
       rescue Exception => e
-        @logger.log(e) if @logger
+        @logger.info(e) if @logger
         return nil
       end
     end
