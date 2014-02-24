@@ -43,14 +43,14 @@ module Markety
       sync_lead_record(lead_record)
     end
 
-    def sync_lead_record(lead_record)
+    def sync_lead_record(lead_record, marketo_cookie=nil)
       begin
         attributes = []
         lead_record.each_attribute_pair do |name, value|
           attributes << {:attr_name => name, :attr_value => value, :attr_type => lead_record.get_attribute_type(name) }
         end
 
-        response = send_request(:sync_lead, {
+        message = {
           :return_lead => true,
           :lead_record => {
             :email => lead_record.email,
@@ -58,12 +58,13 @@ module Markety
               :attribute => attributes
               }
           },
-            :marketoCookie => lead_record.get_attribute("_mkt_trk")
-        })
+          :marketo_cookie => marketo_cookie
+        }
+
+        response = send_request(:sync_lead, message)
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
       rescue Exception => e
-        @logger.info(lead_record.inspect)
-        @logger.info(e) if @logger
+        @logger.info(e.inspect) if @logger
         return nil
       end
     end
