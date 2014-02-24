@@ -6,11 +6,12 @@ module Markety
       env_namespace "SOAP-ENV"
       namespaces({"xmlns:ns1" => "http://www.marketo.com/mktows/"})
       pretty_print_xml true
+      log_level :debug
     end
-    
+
     Client.new(client, Markety::AuthenticationHeader.new(access_key, secret_key))
   end
-  
+
   class Client
     def initialize(savon_client, authentication_header)
       @client = savon_client
@@ -55,9 +56,9 @@ module Markety
             :email => lead_record.email,
             :lead_attribute_list => {
               :attribute => attributes
-              },
-              :marketoCookie => lead_record.get_attribute("_mkt_trk")
-          }
+              }
+          },
+            :marketoCookie => lead_record.get_attribute("_mkt_trk")
         })
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
       rescue Exception => e
