@@ -1,4 +1,5 @@
-$:.push File.expand_path("../lib", __FILE__)
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'markety/version'
 
 Gem::Specification.new do |s|
@@ -10,10 +11,10 @@ Gem::Specification.new do |s|
   s.email        = "david.e.santoso@gmail.com"
   s.homepage     = "https://github.com/davidsantoso/markety"
   s.files        = Dir['lib/**/*.rb']
+  s.license      = 'MIT'
   s.require_path = 'lib'
-  s.executables << 'markety'
   s.required_ruby_version       = '>= 1.9.3'
   s.add_dependency             'savon', '~> 2.3'
   s.add_dependency             'wasabi', '~> 3.2'
-  s.add_development_dependency 'rspec', '>= 2.3.0'
+  s.add_development_dependency 'rspec', '~> 2.3', '>= 2.3.0'
 end

@@ -47,21 +47,20 @@ module Markety
       begin
         attributes = []
         lead_record.each_attribute_pair do |name, value|
-          attributes << {:attr_name => name, :attr_value => value, :attr_type => lead_record.get_attribute_type(name) }
+          attributes << {attr_name: name, attr_value: value, attr_type: lead_record.get_attribute_type(name) }
         end
 
-        message = {
-          :return_lead => true,
-          :lead_record => {
-            :email => lead_record.email,
-            :lead_attribute_list => {
-              :attribute => attributes
+        response = send_request(:sync_lead, {
+          return_lead: true,
+          lead_record: {
+            email: lead_record.email,
+            lead_attribute_list: {
+              attribute: attributes
               }
           },
           :marketo_cookie => marketo_cookie
         }
 
-        response = send_request(:sync_lead, message)
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
       rescue Exception => e
         @logger.info(e.inspect) if @logger
@@ -76,17 +75,17 @@ module Markety
       begin
         attributes = []
         lead_record.each_attribute_pair do |name, value|
-          attributes << {:attr_name => name, :attr_value => value}
+          attributes << {attr_name: name, attr_value: value}
         end
 
-        attributes << {:attr_name => 'Id', :attr_type => 'string', :attr_value => idnum.to_s}
+        attributes << {attr_name: 'Id', attr_type: 'string', attr_value: idnum.to_s}
 
         response = send_request(:sync_lead, {
-          :return_lead => true,
-          :lead_record =>
+          return_lead: true,
+          lead_record:
           {
-            :lead_attribute_list => { :attribute => attributes},
-            :id => idnum
+            lead_attribute_list: { attribute: attributes},
+            id: idnum
           }
         })
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
@@ -96,31 +95,37 @@ module Markety
       end
     end
 
-    def add_to_list(list_key, email)
-      list_operation(list_key, ListOperationType::ADD_TO, email)
+    def add_to_list(list_name, idnum)
+      list_operation(list_name, ListOperationType::ADD_TO, idnum)
     end
 
-    def remove_from_list(list_key, email)
-      list_operation(list_key, ListOperationType::REMOVE_FROM, email)
+    def remove_from_list(list_name, idnum)
+      list_operation(list_name, ListOperationType::REMOVE_FROM, idnum)
     end
 
-    def is_member_of_list?(list_key, email)
-      list_operation(list_key, ListOperationType::IS_MEMBER_OF, email)
+    def is_member_of_list?(list_name, idnum)
+      list_operation(list_name, ListOperationType::IS_MEMBER_OF, idnum)
     end
 
     private
-      def list_operation(list_key, list_operation_type, email)
+      def list_operation(list_name, list_operation_type, idnum)
         begin
           response = send_request(:list_operation, {
-            :list_operation   => list_operation_type,
-            :list_key         => list_key,
-            :strict           => 'false',
-            :list_member_list => {
-              :lead_key => [
-              {:key_type => 'EMAIL', :key_value => email}
-            ]
+            list_operation: list_operation_type,
+            strict:         'false',
+            list_key: {
+              key_type: 'MKTOLISTNAME',
+              key_value: list_name
+            },
+            list_member_list: {
+              lead_key: [{
+                key_type: 'IDNUM',
+                key_value: idnum
+                }
+              ]
+            }
           }
-        })
+        )
         return response
       rescue Exception => e
         @logger.info(e) if @logger
@@ -145,7 +150,7 @@ module Markety
     end
 
     def request(namespace, message, header)
-      @client.call(namespace, :message => message, :soap_header => header)
+      @client.call(namespace, message: message, soap_header: header)
     end
   end
 end
