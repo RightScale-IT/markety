@@ -59,7 +59,7 @@ module Markety
               }
           },
           :marketo_cookie => marketo_cookie
-        }
+        })
 
         return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])
       rescue Exception => e
