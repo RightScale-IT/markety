@@ -136,7 +136,9 @@ module Markety
     def get_lead(lead_key)
       begin
         response = send_request(:get_lead, {"leadKey" => lead_key.to_hash})
-        return LeadRecord.from_hash(response[:success_get_lead][:result][:lead_record_list][:lead_record])
+        results = response[:success_get_lead][:result][:lead_record_list][:lead_record]
+        first_result = [*results].first
+        return LeadRecord.from_hash(first_result)
       rescue Exception => e
         @logger.info(e) if @logger
         return nil
