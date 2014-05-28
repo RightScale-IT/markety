@@ -33,6 +33,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency  'pry-plus'
   s.add_development_dependency  'coveralls'
 
-  s.add_runtime_dependency      'savon', '= 2.3.1'
-  s.add_runtime_dependency      'wasabi', '= 3.2.1'
+  s.add_runtime_dependency      'savon', '~> 2.3'
 end
